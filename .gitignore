@@ -8,5 +8,4 @@ slprj/
 *.autosave
 results/matlab/
 results/parity/
-models/*.slx
 models/*.png

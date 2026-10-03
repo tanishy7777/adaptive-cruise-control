@@ -20,7 +20,7 @@ $$u_{raw,k}=K_pe_k+K_iI_k+K_dD_k,\qquad \tau_D=0.2\,s.$$
 
 First saturate to [−4, +2] m/s², then constrain the command to measured acceleration ± $j_{max}\tau_a$, then reapply the physical bounds. With the chosen actuator discretization this bounds the change in moving-vehicle acceleration to $j_{max}\Delta t$, where $j_{max}=2.5$ m/s³. It is not a command slew-rate limit.
 
-Update the integral by $e_k\Delta t$ only when the raw output matches the applied command, or when the error would drive the output back toward the applied command. Clamp the integral to ±10 m/s. Reset integral and derivative memory on mode transitions. Emergency mode freezes/resets that memory and sets the command to −4 m/s².
+Update the integral by $e_k\Delta t$ only when the raw output matches the applied command, or when the error would drive the output back toward the applied command. Clamp the integral to ±10 m (speed error integrated over time). Reset integral and derivative memory on mode transitions. Emergency mode freezes/resets that memory and sets the command to −4 m/s².
 
 Gains were selected by iterative scenario checks, not a formal optimization or a claim of global stability. The P/PI/PID study changes only `ki`/`kd` and preserves all supervisor and actuator settings.
 
