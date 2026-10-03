@@ -14,7 +14,19 @@ for k=1:numel(scenarios)
     in=in.setModelParameter('StopTime',num2str(s.duration));
     result=sim(in);
     log=result.get('trace_log');
-    x=[log.time,log.signals.values];
+    values=log.signals.values;
+    % Column-vector MATLAB Function outputs are matrix signals (10 x 1).
+    % Structure-with-time logs matrix signals as [10, 1, sample], while
+    % one-dimensional signals are logged as [sample, 10]. Support both.
+    if isequal(size(values),[numel(log.time),10])
+        samples=values;
+    else
+        assert(size(values,1)==10 && numel(values)==10*numel(log.time),...
+            'Unexpected logged signal dimensions');
+        samples=reshape(values,10,[])';
+    end
+    x=[log.time(:),samples];
+    writematrix(x,fullfile(out,[s.name '_simulink.csv']));
     expected=acc_simulate(s,p);
     assert(isequal(size(x),size(expected)),'Unexpected Simulink trace shape');
     delta=abs(x(:,1:10)-expected(:,1:10));
@@ -22,7 +34,6 @@ for k=1:numel(scenarios)
     assert(isequal(isinf(x(:,11)),isinf(expected(:,11))),'TTC mask mismatch');
     finite=isfinite(expected(:,11));
     assert(all(abs(x(finite,11)-expected(finite,11))<1e-6),'TTC mismatch');
-    writematrix(x,fullfile(out,[s.name '_simulink.csv']));
     fprintf('PASS Simulink parity: %s (max error %.3g)\n',s.name,max(delta,[],'all'));
 end
 try
