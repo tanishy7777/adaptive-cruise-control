@@ -5,10 +5,10 @@ out=fullfile(root,'results','matlab');
 if ~isfolder(out), mkdir(out); end
 names={'time','ego_speed','lead_speed','gap','desired_gap','command',...
     'acceleration','mode','lead_present','reference_speed','ttc'};
-baseline=struct([]); headways=struct([]); controllers=struct([]);
+baseline=cell(numel(scenarios),1); headways={}; controllers=cell(3,1);
 for k=1:numel(scenarios)
     s=scenarios(k); x=acc_simulate(s,p);
-    baseline(k)=acc_metrics(x,s,p); %#ok<AGROW>
+    baseline{k}=acc_metrics(x,s,p);
     writetable(array2table(x,'VariableNames',names),fullfile(out,[s.name '.csv']));
     f=figure('Visible','off','Position',[0 0 1100 900]);
     tiledlayout(4,1); t=x(:,1); lead=x(:,3)*3.6; gap=x(:,4);
@@ -22,24 +22,24 @@ for k=1:numel(scenarios)
     ylim([-0.2 2.2]); xlabel('Time [s]'); grid on;
     exportgraphics(f,fullfile(out,[s.name '.png']),'Resolution',150); close(f);
 end
-writetable(struct2table(baseline),fullfile(out,'baseline_metrics.csv'));
+writetable(struct2table(vertcat(baseline{:})),fullfile(out,'baseline_metrics.csv'));
 for h=[1 1.5 2]
     cfg=p; cfg.headway=h;
     for k=1:numel(scenarios)
         s=scenarios(k);
-        headways(end+1)=acc_metrics(acc_simulate(s,cfg),s,cfg); %#ok<AGROW>
+        headways{end+1}=acc_metrics(acc_simulate(s,cfg),s,cfg); %#ok<AGROW>
     end
 end
-writetable(struct2table(headways),fullfile(out,'headway_metrics.csv'));
+writetable(struct2table(vertcat(headways{:})),fullfile(out,'headway_metrics.csv'));
 labels={'P','PI','PID'};
 for k=1:3
     cfg=p;
     if k==1, cfg.ki=0; end
     if k<3, cfg.kd=0; end
     s=scenarios(3); m=acc_metrics(acc_simulate(s,cfg),s,cfg);
-    m.controller=string(labels{k}); controllers(k)=m; %#ok<AGROW>
+    m.controller=string(labels{k}); controllers{k}=m;
 end
-writetable(struct2table(controllers),fullfile(out,'controller_metrics.csv'));
-disp(struct2table(baseline));
+writetable(struct2table(vertcat(controllers{:})),fullfile(out,'controller_metrics.csv'));
+disp(struct2table(vertcat(baseline{:})));
 fprintf('Saved MATLAB results to %s\n',out);
 end

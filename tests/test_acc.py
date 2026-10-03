@@ -30,6 +30,24 @@ class ACCBehavior(unittest.TestCase):
         self.assertTrue((x[:, 7] == 0).all())
         self.assertLessEqual(np.max(abs(np.diff(x[:, 6])/self.p["dt"])), 2.5+1e-8)
 
+    def test_baseline_tracking_and_emergency_selectivity(self):
+        for s in self.scenarios:
+            x = simulate(s, self.p)
+            with self.subTest(scenario=s["name"]):
+                self.assertLess(abs(x[-1, 1]-s["final_speed"]), .15)
+                self.assertIsNotNone(metrics(x, s, self.p)["speed_settling_s"])
+                if s["name"] != "hard_brake":
+                    self.assertNotIn(2, x[:, 7])
+
+    def test_emergency_hold_and_release(self):
+        state = np.array([2., 0., 0., 0.])
+        u, held, *_ = controller(0, 0, 8, True, 25, 0, state, self.p)
+        self.assertEqual((u, held[0]), (-4, 2))
+        _, cleared, *_ = controller(0, 0, 8, False, 25, 0, held, self.p)
+        self.assertEqual(cleared[0], 0)
+        _, moving_lead, *_ = controller(0, 3, 15, True, 25, 0, held, self.p)
+        self.assertEqual(moving_lead[0], 1)
+
     def test_slowdown_recovers_headway(self):
         x = simulate(self.scenarios[2], self.p)
         self.assertLess(abs(x[-1, 3]-x[-1, 4]), .5)

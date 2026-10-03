@@ -21,6 +21,9 @@ for k=1:numel(scenarios)
     assert(isequal(isinf(x(:,11)),isinf(py(:,11))));
     finite=isfinite(py(:,11));
     assert(all(abs(x(finite,11)-py(finite,11))<1e-4));
+    assert(abs(x(end,2)-s.final_speed)<0.15,'Baseline final-speed tracking');
+    m=acc_metrics(x,s,p); assert(~isnan(m.speed_settling_s),'Baseline must settle');
+    if ~strcmp(s.name,'hard_brake'), assert(~any(x(:,8)==2),'Unexpected baseline AEB'); end
     fprintf('PASS Python/MATLAB parity: %s\n',s.name);
 end
 x=acc_simulate(scenarios(1),p);
