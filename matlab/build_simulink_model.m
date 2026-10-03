@@ -10,7 +10,7 @@ set_param(model,'SolverType','Fixed-step','Solver','FixedStepDiscrete',...
     'FixedStep',num2str(p.dt,17),'StopTime',num2str(scenarios(3).duration),...
     'ReturnWorkspaceOutputs','on');
 add_block('simulink/Sources/From Workspace',[model '/Scenario'],...
-    'VariableName','scenario_input','Interpolate','off',...
+    'VariableName','scenario_input','Interpolate','off','OutputAfterFinalValue','Holding final value',...
     'SampleTime',num2str(p.dt,17),'Position',[25 55 160 95]);
 add_block('simulink/Signal Routing/Demux',[model '/Inputs'],...
     'Outputs','3','Position',[195 35 200 145]);
@@ -40,7 +40,12 @@ add_block('simulink/Sinks/To Workspace',[model '/Trace'],...
     'VariableName','trace_log','SaveFormat','Structure With Time',...
     'MaxDataPoints','inf','Position',[865 55 965 90]);
 add_block('simulink/Sinks/Scope',[model '/Scope'],...
-    'Position',[865 140 965 175]);
+    'NumInputPorts','4','Position',[1080 150 1160 265]);
+scopeConfig=get_param([model '/Scope'],'ScopeConfiguration');
+scopeConfig.LayoutDimensions=[4 1];
+displayCode=sprintf(['function [speed_kmh,gap_m,accel_mps2,mode] = f(y)\n%%#codegen\n' ...
+    'speed_kmh = y(1:2)*3.6; gap_m = y(3:4); accel_mps2 = y(5:6); mode = y(7);\nend\n']);
+addFunction('Dashboard signals',[860 155 1000 270],displayCode);
 wire('Scenario/1','Inputs/1');
 wire('Inputs/1','Vehicle dynamics/3');
 wire('Inputs/2','Supervisor and PID/3'); wire('Inputs/2','Measurements/7');
@@ -53,14 +58,18 @@ wire('Supervisor and PID/2','Controller memory/1'); wire('Supervisor and PID/2',
 wire('Supervisor and PID/3','Measurements/4'); wire('Supervisor and PID/4','Measurements/5');
 wire('Supervisor and PID/5','Measurements/6');
 wire('Vehicle dynamics/1','Vehicle state/1');
-wire('Measurements/1','Trace/1'); wire('Measurements/1','Scope/1');
+wire('Measurements/1','Trace/1'); wire('Measurements/1','Dashboard signals/1');
+for k=1:4
+    wire(sprintf('Dashboard signals/%d',k),sprintf('Scope/%d',k));
+end
 s=scenarios(3); w=get_param(model,'ModelWorkspace');
 assignin(w,'vehicle_initial',[s.ego_speed;s.lead_speed;s.initial_gap;0]);
 assignin(w,'memory_initial',[0;0;s.set_speed-s.ego_speed;0]);
 assignin(w,'scenario_input',acc_scenario_signal(s,p));
-Simulink.Annotation(model,sprintf(['ACC + AEB | 50 Hz | SI units\n' ...
+note=Simulink.Annotation(model,sprintf(['ACC + AEB | 50 Hz | SI units\n' ...
     'CRUISE / FOLLOW / EMERGENCY_BRAKE\n' ...
     'Explicit state delays break feedback loops. Run run_simulink for all scenarios.']));
+note.Position=[25 460 650 515];
 set_param(model,'SimulationCommand','update');
 if ~isfolder(fullfile(root,'models')), mkdir(fullfile(root,'models')); end
 save_system(model,fullfile(root,'models',[model '.slx']));
