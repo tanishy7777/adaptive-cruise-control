@@ -1,0 +1,8 @@
+[
+  {"name":"free_cruise","title":"Free-road speed tracking","duration":35,"ego_speed":15,"lead_speed":22.2222222222,"initial_gap":100,"set_speed":27.7777777778,"lead_present_until":0,"events":[[0,0]],"settle_after":0,"final_speed":27.7777777778},
+  {"name":"steady_follow","title":"Steady lead at 80 km/h","duration":50,"ego_speed":22.2222222222,"lead_speed":22.2222222222,"initial_gap":55,"set_speed":27.7777777778,"lead_present_until":1000,"events":[[0,0]],"settle_after":0,"final_speed":22.2222222222},
+  {"name":"lead_slowdown","title":"Lead slows from 80 to 50 km/h","duration":60,"ego_speed":22.2222222222,"lead_speed":22.2222222222,"initial_gap":45,"set_speed":27.7777777778,"lead_present_until":1000,"events":[[0,0],[10,-1.3888888889],[16,0]],"settle_after":16,"final_speed":13.8888888888},
+  {"name":"hard_brake","title":"Lead brakes to a stop at -6 m/s²","duration":35,"ego_speed":22.2222222222,"lead_speed":22.2222222222,"initial_gap":40,"set_speed":27.7777777778,"lead_present_until":1000,"events":[[0,0],[8,-6]],"settle_after":12,"final_speed":0},
+  {"name":"catch_slower","title":"Ego catches a 60 km/h lead","duration":65,"ego_speed":27.7777777778,"lead_speed":16.6666666667,"initial_gap":100,"set_speed":27.7777777778,"lead_present_until":1000,"events":[[0,0]],"settle_after":0,"final_speed":16.6666666667},
+  {"name":"road_clears","title":"Lead leaves the lane at 25 s","duration":55,"ego_speed":20,"lead_speed":16.6666666667,"initial_gap":45,"set_speed":27.7777777778,"lead_present_until":25,"events":[[0,0]],"settle_after":25,"final_speed":27.7777777778}
+]

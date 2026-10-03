@@ -1,0 +1,19 @@
+{
+  "scenario": "unavoidable_collision",
+  "headway_s": 1.5,
+  "min_gap_m": -77.76000000000042,
+  "min_gap_margin_m": -87.25999999888485,
+  "below_desired_gap_s": 8.0,
+  "follow_gap_rmse_m": null,
+  "speed_settling_s": null,
+  "set_speed_overshoot_kmh": 0.0,
+  "peak_acceleration_mps2": 0.0,
+  "peak_braking_mps2": 3.9999999999919544,
+  "rms_jerk_mps3": 10.206207261576868,
+  "peak_jerk_mps3": 199.99999999959772,
+  "emergency_s": 8.0,
+  "mode_transitions": 0,
+  "collision": true,
+  "first_collision_s": 0.26,
+  "final_speed_kmh": 0.0
+}

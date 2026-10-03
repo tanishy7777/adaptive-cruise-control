@@ -1,0 +1,20 @@
+{
+  "dt": 0.02,
+  "standstill_gap": 5.0,
+  "headway": 1.5,
+  "accel_max": 2.0,
+  "brake_max": 4.0,
+  "lead_brake_assumption": 6.0,
+  "actuator_tau": 0.25,
+  "jerk_limit": 2.5,
+  "gap_gain": 0.2,
+  "kp": 0.8,
+  "ki": 0.12,
+  "kd": 0.08,
+  "derivative_tau": 0.2,
+  "integral_limit": 10.0,
+  "follow_enter_margin": 8.0,
+  "follow_exit_margin": 18.0,
+  "ttc_trigger": 1.5,
+  "emergency_margin": 2.0
+}

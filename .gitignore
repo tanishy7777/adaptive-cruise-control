@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.DS_Store
+.mplconfig/
+slprj/
+*.slxc
+*.autosave
+results/matlab/
+results/parity/
+models/*.slx
+models/*.png

@@ -1,0 +1,49 @@
+name: Validate ACC
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m unittest discover -s tests -v
+      - run: python python/run_experiments.py --output results/parity
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-results
+          path: results/parity
+  matlab-simulink:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python python/run_experiments.py --output results/parity
+      - uses: matlab-actions/setup-matlab@v2
+        with:
+          release: R2024b
+          products: Simulink
+      - uses: matlab-actions/run-command@v2
+        with:
+          command: addpath('matlab'); test_project; run_project; run_simulink
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: matlab-simulink-results
+          path: |
+            results/matlab
+            models/*.slx
+            models/*.png
